@@ -4,14 +4,26 @@ Lo Primero es Configurar los entornos virtuales, para eso en VMware en "virtual-
 # FW_EDGE_01 — Firewall de borde (OPNsense) 
 ### 1️⃣. Instalar OPNsense
 Descargar la iso e instalar el firewall [OPNsense](https://opnsense.org/download/).
+- Usuario: `installer`  
+- Password: `opnsense`  
+Esto te da acceso al instalador.
+> Recomendable elegir la opción `ZFS` como sistema de  archivos ya que es mas avanzado.
+> Recomendable cambiar la contraseña.
 
 ### 2️⃣. Asignar interfaces y IPs
-> Se introduce las interfaces de red en la opción 1)assign interfaces y se añade: Lan(em1) y Wan(em0).
-  - WAN → 192.168.1.2/24 (gateway 192.168.1.1)  
-  - LAN → 10.10.0.1/24
-    
-> Cambiamos las IPs Lan y Wan en la opción **2)Set interface IP address** a lo siguiente:
-<img width="446" height="80" alt="image" src="https://github.com/user-attachments/assets/4d76e6cd-da22-4cd0-b031-9d86aebc319f" />
+> Se introduce las interfaces de red en la opción 1)assign interfaces y se añade las interfaces.
+
+> Le assignamos las IPs a las interfaces en la opción **2)Set interface IP address** .
+
+
+| Interfaz FW | Nombre | Red/Subred     | IP en FW       | Gateway          | Función                                |
+|-------------|--------|---------------|----------------|----------------|----------------------------------------|
+| em0         | WAN    | 192.168.1.0/24 | 192.168.1.2    | 192.168.1.1    | Conexión a Internet / router ISP        |
+| em1         | LAN    | 10.10.0.0/24   | 10.10.0.1      | –              | Red interna/core                        |
+| em2         | VPN    | 10.10.2.0/24   | 10.10.2.1      | –              | Gateway VPN (clientes remotos)          |
+| em3         | DMZ    | 10.10.3.0/24   | 10.10.3.1      | –              | Servidores expuestos (WEB, MAIL, DNS)   |
+
+
 
 ### 3️⃣. Configuración inicial via GUI
 > En el navegador → https://10.10.0.1
@@ -52,4 +64,8 @@ Descargar la iso e instalar el firewall [OPNsense](https://opnsense.org/download
 
 
 // Permite tráfico seguro desde LAN hacia Internet, protege segmentos críticos.
+
 ### 5️⃣. Integración con Router Core (RT-CORE-01)
+
+
+

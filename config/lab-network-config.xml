@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config version="1.0.0">
+  <vmnet>
+    <name>WAN_NETWORK</name>
+    <number>0</number>
+    <type>bridged</type>
+    <address>192.168.1.0</address>
+    <mask>255.255.255.0</mask>
+    <dhcp>false</dhcp>
+    <nat>false</nat>
+    <hostonly>false</hostonly>
+    <bridged>
+      <device>vmnet0</device>
+      <connectionType>automatic</connectionType>
+    </bridged>
+  </vmnet>
+  
+  <vmnet>
+    <name>LAN_MANAGEMENT</name>
+    <number>1</number>
+    <type>hostonly</type>
+    <address>10.10.0.0</address>
+    <mask>255.255.255.0</mask>
+    <dhcp>false</dhcp>
+    <nat>false</nat>
+    <hostonly>true</hostonly>
+    <hostonly>
+      <device>vmnet1</device>
+    </hostonly>
+  </vmnet>
+  
+  <vmnet>
+    <name>INTERNAL_NETWORK</name>
+    <number>2</number>
+    <type>hostonly</type>
+    <address>10.10.1.0</address>
+    <mask>255.255.255.0</mask>
+    <dhcp>false</dhcp>
+    <nat>false</nat>
+    <hostonly>true</hostonly>
+    <hostonly>
+      <device>vmnet2</device>
+    </hostonly>
+  </vmnet>
+  
+  <vmnet>
+    <name>VPN_NETWORK</name>
+    <number>3</number>
+    <type>hostonly</type>
+    <address>10.10.2.0</address>
+    <mask>255.255.255.0</mask>
+    <dhcp>false</dhcp>
+    <nat>false</nat>
+    <hostonly>true</hostonly>
+    <hostonly>
+      <device>vmnet3</device>
+    </hostonly>
+  </vmnet>
+  
+  <vmnet>
+    <name>DMZ_NETWORK</name>
+    <number>4</number>
+    <type>hostonly</type>
+    <address>10.10.3.0</address>
+    <mask>255.255.255.0</mask>
+    <dhcp>false</dhcp>
+    <nat>false</nat>
+    <hostonly>true</hostonly>
+    <hostonly>
+      <device>vmnet4</device>
+    </hostonly>
+  </vmnet>
+</config>

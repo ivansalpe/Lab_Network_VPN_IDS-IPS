@@ -24,6 +24,9 @@ Esto te da acceso al instalador.
 | em3         | DMZ    | 10.10.3.0/24   | 10.10.3.1      | –              | Servidores expuestos (WEB, MAIL, DNS)   |
 
 
+<img width="1755" height="481" alt="image" src="https://github.com/user-attachments/assets/8e3abf26-e2c9-4d13-894c-067ebdc08f11" />
+
+
 
 ### 3️⃣. Configuración inicial via GUI
 > En el navegador → https://10.10.0.1

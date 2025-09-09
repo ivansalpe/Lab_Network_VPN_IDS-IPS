@@ -57,11 +57,13 @@ exit
 ``` 
 > Salimos del modo configuración.
 <!-- ==========================================
-Verificaciones rápidas
+Verificaciones rápidas:
+``` bash 
 show interfaces
 ping 10.10.0.1
 ping 10.10.1.10
 traceroute 8.8.8.8
+```
 show interfaces → confirma que eth0 y eth1 tienen las IPs correctas.
 
 ping 10.10.0.1 → comprueba conectividad con FW.

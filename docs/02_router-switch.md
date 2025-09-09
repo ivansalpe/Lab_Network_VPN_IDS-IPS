@@ -43,8 +43,9 @@ set interfaces ethernet eth1 address 10.10.1.1/24
 set protocols static route 0.0.0.0/0 next-hop 10.10.0.1
 ```  
 > Todo tráfico no local se envía al firewall de borde.
-
+``` bash 
 commit
+``` 
 > Aplica los cambios inmediatamente.
 ``` bash 
 save
@@ -55,5 +56,18 @@ save
 exit
 ``` 
 > Salimos del modo configuración.
+<!-- ==========================================
+Verificaciones rápidas
+show interfaces
+ping 10.10.0.1
+ping 10.10.1.10
+traceroute 8.8.8.8
+show interfaces → confirma que eth0 y eth1 tienen las IPs correctas.
 
+ping 10.10.0.1 → comprueba conectividad con FW.
+
+ping 10.10.1.10 → comprueba conectividad con SRV-WEB.
+
+traceroute 8.8.8.8 → verifica que la ruta por defecto hacia Internet funciona
+=========================================== -->
 ### 3️⃣. Tercer Punto Importante

@@ -14,3 +14,8 @@ Se arranca la máquina con la iso puesta y después de poner las credenciales(vy
 
 >//Copia VyOS desde el CD al disco duro virtual y configura GRUB para boot.
 
+### 2️⃣. Configurar interfaces y rutas (RT/SW-CORE-01)
+
+> Esto asigna IPs a las interfaces del router core y establecer rutas básicas para que el tráfico interno y hacia Internet fluya correctamente.
+
+ Pasamos a modo configuración para poder aplicar cambios de red con ```configure```

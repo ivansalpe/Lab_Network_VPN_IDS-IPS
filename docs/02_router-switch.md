@@ -18,4 +18,42 @@ Se arranca la máquina con la iso puesta y después de poner las credenciales(vy
 
 > Esto asigna IPs a las interfaces del router core y establecer rutas básicas para que el tráfico interno y hacia Internet fluya correctamente.
 
- Pasamos a modo configuración para poder aplicar cambios de red con ```configure```
+ Entramos en modo configuración para poder aplicar cambios de red. 
+ ``` bash 
+ configure
+ ```
+[//]: # (Interfaz hacia IDS/FW)
+
+``` bash
+set interfaces ethernet eth0 description "Link to IDS"
+set interfaces ethernet eth0 address 10.10.0.2/24
+``` 
+> eth0 conecta al IDS y al firewall; 10.10.0.2/24 es la IP del Core en esta subred.
+
+[//]: # 'Interfaz hacia SWC (LAN interna, VLAN1)'
+
+``` bash
+set interfaces ethernet eth1 description "LAN VLAN1"
+set interfaces ethernet eth1 address 10.10.1.1/24
+```
+> eth1 conecta al switch core y distribuye tráfico a los servidores internos.
+
+[//]: # (Ruta por defecto hacia FW-EDGE-01)
+``` bash 
+set protocols static route 0.0.0.0/0 next-hop 10.10.0.1
+```  
+> Todo tráfico no local se envía al firewall de borde.
+
+commit
+> Aplica los cambios inmediatamente.
+``` bash 
+save
+``` 
+> Guarda la configuración de manera persistente.
+
+``` bash 
+exit
+``` 
+> Salimos del modo configuración.
+
+### 3️⃣. Tercer Punto Importante

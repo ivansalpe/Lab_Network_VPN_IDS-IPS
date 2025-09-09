@@ -4,4 +4,4 @@ El objetivo de crear una VM ligera que actúe como switch virtual / bridge para 
 
 ### 1️⃣. Crear la VM SW-CORE-02 en VMware
 
-Lo primero es preparar y configurar el entorno, descargo la iso de [Alpine Linux](https://www.alpinelinux.org/?utm_source=chatgpt.com) que es la distribución de linux que voy a utilizar.
+Lo primero es preparar y configurar el entorno, descargo la iso de [Alpine Linux](https://www.alpinelinux.org/?utm_source=chatgpt.com) que es la distribución de linux que voy a utilizar ya que es ligera.

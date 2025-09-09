@@ -72,4 +72,33 @@ ping 10.10.1.10 → comprueba conectividad con SRV-WEB.
 
 traceroute 8.8.8.8 → verifica que la ruta por defecto hacia Internet funciona
 =========================================== -->
-### 3️⃣. Tercer Punto Importante
+### 3️⃣. Configuración VLAN trunking (opcional pero recomendado)
+
+
+
+
+### 4️⃣. Integración con FW-EDGE-01 e IDS
+### 5️⃣. Conectar SWC y servidores
+<!-- =========================================== 
+7. Verificaciones básicas
+
+Qué hacer:
+
+ping 10.10.0.1 → hacia FW-EDGE-01
+
+ping 10.10.1.10 → hacia SRV-WEB
+
+traceroute 8.8.8.8 → confirma salida por FW-EDGE-01
+
+Para qué sirve: Comprueba conectividad entre FW, IDS, Core y servidores.
+
+8. Backup y automatización
+
+Qué hacer:
+
+Exportar configuración VyOS: save /config/config.boot
+
+Guardar en repo configs/core/
+
+Para qué sirve: Permite restaurar rápidamente o replicar VM.
+=========================================== -->

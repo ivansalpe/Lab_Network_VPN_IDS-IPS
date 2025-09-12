@@ -80,6 +80,9 @@ configure
 Ⓑ Crear VLAN1 (LAN interna)
 <!-- ==========================================
 # Crear subinterfaz VLAN1
+vif 1 → VLAN1 (LAN interna)
+
+IP 10.10.1.1/24 → gateway para servidores
 =========================================== -->
 ``` bash
 set interfaces ethernet eth1 vif 1 address '10.10.1.1/24'

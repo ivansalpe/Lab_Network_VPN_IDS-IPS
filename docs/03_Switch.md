@@ -8,5 +8,5 @@ Lo primero es preparar y configurar el entorno, descargo la iso de [Alpine Linux
 
 Editamos el archivo ".vmx" y le añadimos la siguiente línea:
 ```bash
-ethernet0.allowPromisc = "TRUE"
+ethernet0.allowPromisc = "TRUE" <!--Esto permite al sistema de bridge capturar paquetes en modo promiscuo si hace falta.-->
 ```

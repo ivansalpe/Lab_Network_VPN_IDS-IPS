@@ -103,4 +103,83 @@ rc-update add local boot'''
  -->
 ### 3️⃣. Servidores internos conectados a br0
 Ahora iré a la creación y configuración de los servidores internos (SRV-WEB, SRV-DB, SRV-APP) en el laboratorio, conectados al bridge br0 del SW-CORE-02 en Alpine completando la red interna.
- 
+<!-- ==========================================
+| Parámetro       | SRV-WEB | SRV-DB | SRV-APP |
+|-----------------|---------|--------|---------|
+| CPU             | 1 vCPU  | 2 vCPU | 2 vCPU  |
+| RAM             | 2 GB    | 2 GB   | 2 GB    |
+| Disco           | 10 GB   | 10 GB  | 10 GB   |
+| SO              | Debian / Ubuntu Server minimal |
+| NIC             | 1 NIC → conectar a `br0` en Alpine (`SW-CORE-02`) |
+
+> La NIC de cada servidor se conecta a la **LAN interna (VLAN1)** a través del bridge `br0`.
+=========================================== -->
+ #### 🔧 Configuración de red en cada servidor
+ ##### A) SRV-WEB — IP: `10.10.1.10/24`
+
+ > Edito el archivo: "/etc/network/interfaces" con lo siguiente:
+
+``` bash
+# loopback
+auto lo
+iface lo inet loopback
+
+# interfaz LAN conectada al bridge
+auto ens33
+iface ens33 inet static
+    address 10.10.1.10
+    netmask 255.255.255.0
+    gateway 10.10.1.1
+    dns-nameservers 8.8.8.8 1.1.1.1
+```   
+reinicio el servicio.
+``` bash
+sudo systemctl restart networking
+```
+<!-- ==========================================
+Verifica la conectividad:
+ip a show ens33
+ping -c 4 10.10.1.1   # Core Router / Firewall
+ping -c 4 10.10.1.11  # SRV-DB
+ping -c 4 10.10.1.12  # SRV-APP
+=========================================== -->
+##### B) SRV-DB — IP 10.10.1.11/24
+> Edito el archivo: "/etc/network/interfaces" con lo siguiente:
+
+``` bash
+# loopback
+auto lo
+iface lo inet loopback
+
+# interfaz LAN conectada al bridge
+auto ens33
+iface ens33 inet static
+    address 10.10.1.11
+    netmask 255.255.255.0
+    gateway 10.10.1.1
+    dns-nameservers 8.8.8.8 1.1.1.1
+```   
+reinicio el servicio.
+``` bash
+sudo systemctl restart networking
+```
+##### C) SRV-APP — IP 10.10.1.12/24
+> Edito el archivo: "/etc/network/interfaces" con lo siguiente:
+
+``` bash
+# loopback
+auto lo
+iface lo inet loopback
+
+# interfaz LAN conectada al bridge
+auto ens33
+iface ens33 inet static
+    address 10.10.1.12
+    netmask 255.255.255.0
+    gateway 10.10.1.1
+    dns-nameservers 8.8.8.8 1.1.1.1
+```   
+reinicio el servicio.
+``` bash
+sudo systemctl restart networking
+```

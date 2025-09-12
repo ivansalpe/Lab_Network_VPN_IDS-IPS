@@ -57,11 +57,23 @@ apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.22/main 
 auto lo
 iface lo inet loopback
 
-# Interfaz física (sin IP)
+# Interfaz físicas (sin IP)
 auto eth0
 iface eth0 inet manual
 
-# Bridge principal
+auto eth0
+iface eth0 inet manual
+
+auto eth1
+iface eth1 inet manual
+
+auto eth2
+iface eth2 inet manual
+
+auto eth3
+iface eth3 inet manual
+
+# Bridge principal (actúa como switch)
 auto br0
 iface br0 inet static
     address 10.10.1.2
@@ -77,8 +89,30 @@ iface br0 inet static
  <!-- eth0 es la interfaz conectada al Core/Router.
 
 br0 es el bridge virtual, con la IP de gestión 10.10.1.2.
+🔑 ¿Qué pasa aquí?
 
-Si vas a conectar más NICs al switch, simplemente añádelas en bridge_ports.
+eth0 ↔ uplink al Core (10.10.1.1).
+
+eth1 ↔ SRV-WEB.
+
+eth2 ↔ SRV-DB.
+
+eth3 ↔ SRV-APP.
+
+Todos esos puertos son parte del mismo bridge (br0).
+
+La IP de gestión (10.10.1.2) vive en br0, no en las interfaces físicas.
+
+Alpine funciona como un switch gestionado L2.
+
+✅ Ventajas
+
+Comportamiento idéntico a un switch físico.
+
+Menos lío de rutas, NAT o forwarding: todos en la misma LAN.
+
+Escalable: puedes añadir más interfaces al bridge (bridge_ports).
+Si se va a conectar más NICs al switch, simplemente se añade en bridge_ports.
  -->
  Reinicia la red para aplicar cambios:
  ``` bash

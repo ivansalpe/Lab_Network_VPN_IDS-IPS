@@ -188,7 +188,8 @@ sudo systemctl restart networking
 
 Crea el archivo de configuración de red para ens33:
 
-sudo nano /etc/systemd/network/10-ens33.network
+su -
+nano /etc/systemd/network/10-ens33.network
 
 [Match]
 Name=ens33

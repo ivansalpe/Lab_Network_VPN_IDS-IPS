@@ -101,5 +101,6 @@ Asegúrate de que los servicios se inicien en boot:
 '''rc-update add networking boot
 rc-update add local boot'''
  -->
-
+### 3️⃣. Servidores internos conectados a br0
+Ahora iré a la creación y configuración de los servidores internos (SRV-WEB, SRV-DB, SRV-APP) en el laboratorio, conectados al bridge br0 del SW-CORE-02 en Alpine completando la red interna.
  

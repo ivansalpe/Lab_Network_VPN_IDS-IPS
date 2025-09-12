@@ -6,7 +6,8 @@ El objetivo de crear una VM ligera que actúe como switch virtual / bridge para 
 
 Lo primero es preparar y configurar el entorno, descargo la iso de [Alpine Linux](https://www.alpinelinux.org/?utm_source=chatgpt.com) que es la distribución de linux que voy a utilizar ya que es ligera y empiezo a preparar la interfaz de red(VMnet2 → 10.10.1.0/24) en modo "host only".
 
-Editamos el archivo ".vmx" y le añadimos la siguiente línea:
+Editamos el archivo ".vmx" y le añadimos la siguiente línea: 
+<!-- Esto permite al sistema de bridge capturar paquetes en modo promiscuo si hace falta. --
 ```bash
-ethernet0.allowPromisc = "TRUE" <!--Esto permite al sistema de bridge capturar paquetes en modo promiscuo si hace falta.-->
+ethernet0.allowPromisc = "TRUE" >
 ```

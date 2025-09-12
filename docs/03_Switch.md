@@ -183,4 +183,34 @@ reinicio el servicio.
 ``` bash
 sudo systemctl restart networking
 ```
+<!-- ==========================================
+1️⃣Usar systemd-networkd con tu configuración estática en modo gráfico.
+
+Crea el archivo de configuración de red para ens33:
+
+sudo nano /etc/systemd/network/10-ens33.network
+
+[Match]
+Name=ens33
+
+[Network]
+Address=10.10.1.11/24
+Gateway=10.10.1.1
+DNS=8.8.8.8
+DNS=1.1.1.1
+
+Cambia la IP según el servidor (WEB/DB/APP).
+
+2️⃣ Habilitar y reiniciar systemd-networkd
+sudo systemctl enable systemd-networkd --now
+sudo systemctl restart systemd-networkd
+
+3️⃣ Verificar que la IP se levanta
+ip addr show ens33
+ping -c 4 10.10.1.1
+ping -c 4 10.10.1.10
+
+Ahora sí, la interfaz debería aparecer con la IP correcta en modo gráfico y consola.
+=========================================== -->
+
 ### 4️⃣. Instalación de servicios y pruebas de conectividad

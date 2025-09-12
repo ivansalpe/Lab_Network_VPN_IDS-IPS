@@ -88,16 +88,20 @@ IP 10.10.1.1/24 → gateway para servidores
 set interfaces ethernet eth1 vif 1 address '10.10.1.1/24'
 set interfaces ethernet eth1 vif 1 description 'LAN_VLAN1'
 ```
+# Comentario: eth1 se convierte en trunk para VLAN1; IP 10.10.1.1/24 para la red interna.
 Ⓒ Crear VLAN2 (VPN)
 ``` bash
 set interfaces ethernet eth1 vif 2 description 'VPN_VLAN2'
 ```
-
+set interfaces ethernet eth0 vif 2 address 10.10.2.2/24
+# Comentario: eth0 hacia IDS/FW también lleva tráfico de VPN; IP 10.10.2.2/24.
 Ⓓ Crear VLAN3 (DMZ)
 
 ``` bash
 set interfaces ethernet eth1 vif 3 description 'DMZ_VLAN3'
 ```
+set interfaces ethernet eth3 vif 3 address 10.10.3.2/24
+# Comentario: eth3 conecta hacia DMZ; IP 10.10.3.2/24 para servidores DMZ.
 
 Ⓔ Configurar ruta hacia FW-EDGE-01
 ``` bash
@@ -110,6 +114,19 @@ VyOS tiene IP forwarding activado por defecto, pero para asegurarse:
 ``` bash
 set system ip-forwarding
 ```
+## Verificaciones
+show interfaces
+# Comentario: Comprueba que eth1.1, eth0.2 y eth3.3 existen y tienen las IPs correctas.
+
+ping 10.10.1.10
+# Comentario: Comprueba conectividad con SRV-WEB (VLAN1).
+
+ping 10.10.2.10
+# Comentario: Comprueba conectividad con VPN-GW (VLAN2).
+
+ping 10.10.3.10
+# Comentario: Comprueba conectividad con DMZ-WEB (VLAN3).
+
 ### 4️⃣. Integración con FW-EDGE-01 e IDS
 ### 5️⃣. Conectar SWC y servidores
 <!-- =========================================== 

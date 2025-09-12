@@ -73,10 +73,40 @@ ping 10.10.1.10 → comprueba conectividad con SRV-WEB.
 traceroute 8.8.8.8 → verifica que la ruta por defecto hacia Internet funciona
 =========================================== -->
 ### 3️⃣. Configuración VLAN trunking (opcional pero recomendado)
+Ⓐ Entrar en modo configuración VyOS
+``` bash
+configure
+```
+Ⓑ Crear VLAN1 (LAN interna)
+<!-- ==========================================
+# Crear subinterfaz VLAN1
+=========================================== -->
+``` bash
+set interfaces ethernet eth1 vif 1 address '10.10.1.1/24'
+set interfaces ethernet eth1 vif 1 description 'LAN_VLAN1'
+```
+Ⓒ Crear VLAN2 (VPN)
+``` bash
+set interfaces ethernet eth1 vif 2 description 'VPN_VLAN2'
+```
 
+Ⓓ Crear VLAN3 (DMZ)
 
+``` bash
+set interfaces ethernet eth1 vif 3 description 'DMZ_VLAN3'
+```
 
+Ⓔ Configurar ruta hacia FW-EDGE-01
+``` bash
+set protocols static route 0.0.0.0/0 next-hop 10.10.0.1
+```
+- Esto permite que cualquier tráfico que salga de la LAN hacia Internet pase por el firewall.
 
+Ⓕ Activar forwarding entre VLANs (opcional para pruebas de LAN)
+VyOS tiene IP forwarding activado por defecto, pero para asegurarse:
+``` bash
+set system ip-forwarding
+```
 ### 4️⃣. Integración con FW-EDGE-01 e IDS
 ### 5️⃣. Conectar SWC y servidores
 <!-- =========================================== 

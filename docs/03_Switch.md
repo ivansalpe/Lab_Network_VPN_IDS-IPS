@@ -183,3 +183,4 @@ reinicio el servicio.
 ``` bash
 sudo systemctl restart networking
 ```
+### 4️⃣. Instalación de servicios y pruebas de conectividad

@@ -55,23 +55,29 @@ Esto permite que los clientes validen la identidad del servidor y establezcan un
 sudo apt install -y tpm2-abrmd tpm2-tools libtss2-tcti-tabrmd0
 
 Esto instalará la librería que el plugin TPM necesita.
-Después de reiniciar strongSwan, el warning debería desaparecer.
 
 > Deshabilitar el plugin TPM (opción rápida)
-
 Edito /etc/strongswan.d/charon/*.conf (por ejemplo plugins-strongswan.conf) y desactivo el plugin tpm.
 
 Por ejemplo, añado:
-
 load = tpm no
 --> 
 En VPN-GW:
 
-Se crean las carpetas y se generar la clave privada de la CA:
+Ⓐ. Se crean las carpetas para las claves:
 ``` bash
 mkdir -p /etc/ipsec.d/{private,certs,cacerts}
-ipsec pki --gen --outform pem > /etc/ipsec.d/private/vpn-gw.key.pem
-chmod 600 /etc/ipsec.d/private/vpn-gw.key.pem
+``` 
+Ⓑ. Se genera la clave privada CA autofirmada:
+``` bash
+mkdir -p /etc/ipsec.d/{private,certs,cacerts}
+sudo ipsec pki --gen --type rsa --size 4096 --outform pem > /etc/ipsec.d/private/ca.key.pem
+sudo chmod 600 /etc/ipsec.d/private/ca.key.pem
+
+sudo ipsec pki --self --ca --lifetime 3650 \
+  --in /etc/ipsec.d/private/ca.key.pem \
+  --dn "CN=VPN-CA" \
+  --outform pem > /etc/ipsec.d/cacerts/ca-cert.pem
 ```
 > 📌 Qué hace: </br>
 > Crea una clave RSA privada para la CA. </br>
@@ -81,16 +87,10 @@ chmod 600 /etc/ipsec.d/private/vpn-gw.key.pem
 >Esta clave es ultra sensible: con ella se pueden firmar certificados. </br>
 > Debe tener permisos 600 y nunca salir del servidor seguro.
 
-Crear certificado autofirmado(CA) para el servidor VPN:
+Ⓒ. Crear clave privada para el VPN-GW:
 ``` bash
-ipsec pki --self --in /etc/ipsec.d/private/vpn-gw.key.pem \
-  --dn "CN=vpn.ivansalpe.lab" --ca \
-  --outform pem > /etc/ipsec.d/cacerts/ca-cert.pem
-
-ipsec pki --issue --in /etc/ipsec.d/private/vpn-gw.key.pem \
-  --cacert /etc/ipsec.d/cacerts/ca-cert.pem \
-  --dn "CN=vpn.ivansalpe.lab" --san "vpn.ivansalpe.lab" \
-  --outform pem > /etc/ipsec.d/certs/vpn-gw.cert.pem
+sudo ipsec pki --gen --type rsa --size 2048 --outform pem > /etc/ipsec.d/private/vpn-gw.key.pem
+sudo chmod 600 /etc/ipsec.d/private/vpn-gw.key.pem
 ```
 > 📌 Qué hace: </br>
 > Usa la clave de la CA para generar un certificado autofirmado. </br>
@@ -98,3 +98,27 @@ ipsec pki --issue --in /etc/ipsec.d/private/vpn-gw.key.pem \
 > Los clientes lo necesitan para confiar en los certificados que firme la CA. </br>
 >👉 Se guarda en /etc/ipsec.d/cacerts/ca.cert.pem.
 
+Ⓓ. Emitir certificado del servidor VPN
+``` bash
+sudo ipsec pki --pub --in /etc/ipsec.d/private/vpn-gw.key.pem \
+  --type rsa | sudo ipsec pki --issue \
+  --cacert /etc/ipsec.d/cacerts/ca-cert.pem \
+  --cakey /etc/ipsec.d/private/ca.key.pem \
+  --dn "CN=vpn.ivansalpe.lab" \
+  --san "vpn.ivansalpe.lab" \
+  --flag serverAuth --flag ikeIntermediate \
+  --outform pem > /etc/ipsec.d/certs/vpn-gw.cert.pem
+```
+Ⓔ. Verificar Certificado
+``` bash
+openssl x509 -in /etc/ipsec.d/certs/vpn-gw.cert.pem -text -noout
+``` 
+<!-- 
+| Paso | Qué hace | Tip importante |
+|------|----------|----------------|
+| 1️⃣ Crear CA | Genera la **clave privada de la autoridad certificadora** y un certificado autofirmado. | Mantener la clave privada de la CA **muy segura**. No compartir. |
+| 2️⃣ Crear clave VPN | Genera la **clave privada del servidor VPN** que usará StrongSwan. | RSA 2048 suficiente para laboratorio; en producción: 3072-4096. |
+| 3️⃣ Emitir certificado VPN | Convierte la clave privada en pública, luego **firma con la CA** para que el certificado sea válido. | `--flag serverAuth --flag ikeIntermediate` asegura que el certificado es válido para servidor VPN y IKEv2. |
+| 4️⃣ Verificación | Muestra información clave del certificado para confirmar CN, SAN y flags. | Siempre revisar CN y SAN coincidan con tu hostname/IP real de VPN. |
+--> 
+### 4️⃣. 

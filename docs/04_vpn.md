@@ -109,9 +109,55 @@ openssl x509 -in /etc/ipsec.d/certs/vpn-gw.cert.pem -text -noout
 | 3️⃣ Emitir certificado VPN | Convierte la clave privada en pública, luego **firma con la CA** para que el certificado sea válido. | `--flag serverAuth --flag ikeIntermediate` asegura que el certificado es válido para servidor VPN y IKEv2. |
 | 4️⃣ Verificación | Muestra información clave del certificado para confirmar CN, SAN y flags. | Siempre revisar CN y SAN coincidan con tu hostname/IP real de VPN. |
 
+- ca-cert.pem → certificado de la CA
+
+- vpn-gw.cert.pem → certificado del servidor VPN
+
+- vpn-gw.key.pem → clave privada del servidor VPN
+
 Para automatizar el processo [Agenerate-cert](config/generate-vpn-cert.sh)
 --> 
+💡 Siempre mantengo las claves privadas con permisos 600 para seguridad.
 
-Para utomatizar el processo [Agenerate-cert](config/generate-vpn-cert.sh)
+### 4️⃣. Integración VPN-GW con StrongSwan y Firewall
 
-### 4️⃣. 
+En este paso voy a configurar la VPN Gateway (`VPN-GW 10.10.2.10`) usando **StrongSwan (IKEv2)** y conectarla con el Firewall `FW-EDGE-01`. Esto me permitirá que clientes remotos se conecten de forma segura a la LAN interna.
+
+#### Ⓐ Configuración de StrongSwan en VPN-GW
+
+Modifico el archivo **/etc/ipsec.conf** con la siguiente configuración:
+
+```bash
+config setup
+    charondebug="ike 2, knl 2, cfg 2, net 2"
+
+conn ivansalpe-vpn
+    keyexchange=ikev2
+    auto=add
+    left=%any
+    leftid=@vpn.ivansalpe.lab
+    leftcert=vpn-gw.cert.pem
+    leftsubnet=10.10.1.0/24
+    right=%any
+    rightid=%any
+    rightauth=eap-mschapv2
+    rightsourceip=10.10.2.100-10.10.2.200
+    eap_identity=%identity
+```
+y este archivo **/etc/ipsec.secrets** también con lo siguiente:
+```bash
+: RSA "vpn-gw.key.pem"
+usuario : EAP "claveSuperSecreta123"
+```
+<!-- 
+Qué hago aquí:
+
+leftsubnet -- define la LAN interna que quiero que los clientes VPN vean.
+
+rightsourceip -- define el rango que asigno a los clientes.
+
+eap_identity -- permite usar usuario/contraseña para autenticar los clientes.
+-->
+💡 Siempre reviso que los CN y SAN de mi certificado coincidan con el hostname real del VPN-GW.
+
+

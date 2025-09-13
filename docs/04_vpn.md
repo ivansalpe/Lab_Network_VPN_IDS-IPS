@@ -1,6 +1,6 @@
-## VPN-GW (10.10.2.10) con StrongSwan
+# VPN-GW (10.10.2.10) con StrongSwan
 
-##### 1️⃣. Creación y configuración de red de VPN
+#### 1️⃣. Creación y configuración de red de VPN
 
 Instalo el sistema operativo[Ubuntu Server minimal](https://ubuntu.com/download/server) con su interfaz.
 <!--
@@ -41,4 +41,4 @@ sudo netplan apply
 ip a show ens33
 ping -c 4 10.10.2.1   # FW-EDGE-01
   -->
-### Instalar StrongSwan (IPsec)
+### 2️⃣. Instalar StrongSwan (IPsec)

@@ -63,8 +63,37 @@ Se añade las siguientes reglas:
      - Seleccionar **Automatic Outbound NAT**.
  //La LAN (10.10.0.0/24) puede salir a Internet usando la IP de WAN del firewall (192.168.1.2). Esto evita conflictos de rutas y permite conectividad hacia afuera.
 
-  4. VPN/DMZ → Lo configuramos mas adelante @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  4. VPN/DMZ → 
+     
+- Habilitar IPsec/IKEv2
+` 
+VPN → IPsec → connections → Enable IPsec
+` 
+<!-- Activa el servicio IPSec en el firewall. -->
 
+- Crear Fase 1 (IKEv2)
+
+  
+
+Interfaz em2 → IP 10.10.2.1
+
+Habilito IPsec/IKEv2
+
+Creo fase 1 (IKEv2):
+
+Remote Gateway: any (clientes)
+
+Authentication: RSA (usar CA ca-cert.pem)
+
+Creo fase 2 (IPsec):
+
+Local subnet: 10.10.1.0/24
+
+Remote subnet: 10.10.2.100-200
+
+NAT: si quiero que los clientes accedan a Internet a través de la VPN, configuro masquerade.
+
+Tip: Activo logs de IPsec para depurar si hay problemas de conexión.
 
 >// Permite tráfico seguro desde LAN hacia Internet, protege segmentos críticos.
 

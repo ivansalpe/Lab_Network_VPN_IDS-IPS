@@ -79,24 +79,12 @@ sudo ipsec pki --self --ca --lifetime 3650 \
   --dn "CN=VPN-CA" \
   --outform pem > /etc/ipsec.d/cacerts/ca-cert.pem
 ```
-> 📌 Qué hace: </br>
-> Crea una clave RSA privada para la CA. </br>
-> Se guarda en /etc/ipsec.d/private/ca.key.pem. </br>
-
->⚠️ Importante: </br>
->Esta clave es ultra sensible: con ella se pueden firmar certificados. </br>
-> Debe tener permisos 600 y nunca salir del servidor seguro.
 
 Ⓒ. Crear clave privada para el VPN-GW:
 ``` bash
 sudo ipsec pki --gen --type rsa --size 2048 --outform pem > /etc/ipsec.d/private/vpn-gw.key.pem
 sudo chmod 600 /etc/ipsec.d/private/vpn-gw.key.pem
 ```
-> 📌 Qué hace: </br>
-> Usa la clave de la CA para generar un certificado autofirmado. </br>
-> Este es el certificado raíz (Root CA). </br>
-> Los clientes lo necesitan para confiar en los certificados que firme la CA. </br>
->👉 Se guarda en /etc/ipsec.d/cacerts/ca.cert.pem.
 
 Ⓓ. Emitir certificado del servidor VPN
 ``` bash
@@ -120,5 +108,10 @@ openssl x509 -in /etc/ipsec.d/certs/vpn-gw.cert.pem -text -noout
 | 2️⃣ Crear clave VPN | Genera la **clave privada del servidor VPN** que usará StrongSwan. | RSA 2048 suficiente para laboratorio; en producción: 3072-4096. |
 | 3️⃣ Emitir certificado VPN | Convierte la clave privada en pública, luego **firma con la CA** para que el certificado sea válido. | `--flag serverAuth --flag ikeIntermediate` asegura que el certificado es válido para servidor VPN y IKEv2. |
 | 4️⃣ Verificación | Muestra información clave del certificado para confirmar CN, SAN y flags. | Siempre revisar CN y SAN coincidan con tu hostname/IP real de VPN. |
+
+Para automatizar el processo [Agenerate-cert](config/generate-vpn-cert.sh)
 --> 
+
+Para utomatizar el processo [Agenerate-cert](config/generate-vpn-cert.sh)
+
 ### 4️⃣. 

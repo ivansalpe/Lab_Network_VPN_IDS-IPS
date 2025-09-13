@@ -37,7 +37,7 @@ Aplico los cambios:
 ``` bash
 sudo netplan apply
 ```
-<!-- Para verificar l conexión
+<!-- Para verificar la conexión
 ip a show ens33
 ping -c 4 10.10.2.1   # FW-EDGE-01
   -->
@@ -47,4 +47,54 @@ sudo apt install -y strongswan strongswan-pki
 ```
 Esto instala el servicio de VPN IPsec.
 
-### 4. Generar certificados y claves
+### 3️⃣. Generar certificados y claves
+Aquí se crea una Autoridad Certificadora (CA) y un certificado de servidor para el Gateway VPN.
+Esto permite que los clientes validen la identidad del servidor y establezcan un túnel seguro.
+<!-- 
+> Instalar librerías TPM (si se quiere usar TPM)
+sudo apt install -y tpm2-abrmd tpm2-tools libtss2-tcti-tabrmd0
+
+Esto instalará la librería que el plugin TPM necesita.
+Después de reiniciar strongSwan, el warning debería desaparecer.
+
+> Deshabilitar el plugin TPM (opción rápida)
+
+Edito /etc/strongswan.d/charon/*.conf (por ejemplo plugins-strongswan.conf) y desactivo el plugin tpm.
+
+Por ejemplo, añado:
+
+load = tpm no
+--> 
+En VPN-GW:
+
+Se crean las carpetas y se generar la clave privada de la CA:
+``` bash
+mkdir -p /etc/ipsec.d/{private,certs,cacerts}
+ipsec pki --gen --outform pem > /etc/ipsec.d/private/vpn-gw.key.pem
+chmod 600 /etc/ipsec.d/private/vpn-gw.key.pem
+```
+> 📌 Qué hace: </br>
+> Crea una clave RSA privada para la CA. </br>
+> Se guarda en /etc/ipsec.d/private/ca.key.pem. </br>
+
+>⚠️ Importante: </br>
+>Esta clave es ultra sensible: con ella se pueden firmar certificados. </br>
+> Debe tener permisos 600 y nunca salir del servidor seguro.
+
+Crear certificado autofirmado(CA) para el servidor VPN:
+``` bash
+ipsec pki --self --in /etc/ipsec.d/private/vpn-gw.key.pem \
+  --dn "CN=vpn.ivansalpe.lab" --ca \
+  --outform pem > /etc/ipsec.d/cacerts/ca-cert.pem
+
+ipsec pki --issue --in /etc/ipsec.d/private/vpn-gw.key.pem \
+  --cacert /etc/ipsec.d/cacerts/ca-cert.pem \
+  --dn "CN=vpn.ivansalpe.lab" --san "vpn.ivansalpe.lab" \
+  --outform pem > /etc/ipsec.d/certs/vpn-gw.cert.pem
+```
+> 📌 Qué hace: </br>
+> Usa la clave de la CA para generar un certificado autofirmado. </br>
+> Este es el certificado raíz (Root CA). </br>
+> Los clientes lo necesitan para confiar en los certificados que firme la CA. </br>
+>👉 Se guarda en /etc/ipsec.d/cacerts/ca.cert.pem.
+

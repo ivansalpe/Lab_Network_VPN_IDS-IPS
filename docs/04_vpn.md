@@ -42,3 +42,9 @@ ip a show ens33
 ping -c 4 10.10.2.1   # FW-EDGE-01
   -->
 ### 2️⃣. Instalar StrongSwan (IPsec)
+``` bash
+sudo apt install -y strongswan strongswan-pki
+```
+Esto instala el servicio de VPN IPsec.
+
+### 4. Generar certificados y claves

@@ -3,7 +3,7 @@ Lo Primero es Configurar los entornos virtuales, para eso en VMware en "virtual-
 
 # FW_EDGE_01 — Firewall de borde (OPNsense) 
 ### 1️⃣. Instalar OPNsense
-Descargar la iso e instalar el firewall [OPNsense](https://opnsense.org/download/).
+Descargar la iso e instalar el firewall [OPNsense](https://opnsense.org/download/). <!-- https://docs.opnsense.org/manual/how-tos/ipsec-rw-srv-mschapv2.html -->
 - Usuario: `installer`  
 - Password: `opnsense`  
 Esto te da acceso al instalador.
@@ -63,8 +63,58 @@ Se añade las siguientes reglas:
      - Seleccionar **Automatic Outbound NAT**.
  //La LAN (10.10.0.0/24) puede salir a Internet usando la IP de WAN del firewall (192.168.1.2). Esto evita conflictos de rutas y permite conectividad hacia afuera.
 
-  4. VPN/DMZ → 
-     
+  4. VPN </br>
+  ⓐ. Importar la CA (ca-cert.pem) → `Ruta: System → Trust → Authorities → Add`
+<div align="center">
+     <img width="648" height="237" alt="image" src="https://github.com/user-attachments/assets/15b6e07d-b6ec-4417-bbf7-42e3ef1a279a">
+</div>
+
+   ⓑ. Importar el certificado del servidor firewall (vpn-gw.cert.pem + vpn-gw.key.pem) → `Ruta: System → Trust → Certificates → Add/Import`
+<div align="center">
+     <img width="648" height="237" alt="image" src="https://github.com/user-attachments/assets/3c67e92a-0ec3-41b3-9640-6024289832ab" />
+</div>
+<!-- Activa el servicio IPSec en el firewall. 
+⚡ Ojo: el archivo **ca.key.pem** NO se sube al firewall. Esa clave privada de la CA se guarda bajo 7 llaves 🔐. Solo sirve si quieres generar más certificados en la máquina local.
+-->
+
+<!-- 
+<img width="1190" height="52" alt="image" src="https://github.com/user-attachments/assets/20fe4065-7f80-42e8-9931-f6e44b530941" />
+
+## 🐱 Concatenar certificado e intermediarios para validar el check y me aparezca en verde.
+
+Si mi certificado tiene un intermediario (o solo quiero asegurarme), creo un archivo que contenga primero **mi certificado** y luego **la CA pública**:
+
+```bash
+cat vpn-gw-cert.pem ca-cert.pem > vpn-gw-fullchain.pem
+```
+vpn-gw-cert.pem → mi certificado del gateway 🐶
+
+ca-cert.pem → el certificado público de mi CA 🐹
+
+vpn-gw-fullchain.pem → archivo que OPNsense puede usar para validar toda la cadena 🐰
+
+🐼 Importar el certificado completo en OPNsense
+Voy a:
+
+System → Trust → Certificates → +Add
+En Certificate data, pego el contenido de vpn-gw-fullchain.pem 🦊
+
+En Private key data, pego mi vpn-gw.key.pem 🐸
+
+
+Ahora OPNsense tendrá toda la cadena y podrá validar el certificado 🐵.
+La GUI debería mostrar el check verde, porque ve que mi certificado está firmado por una CA confiable 🐷.
+
+🐔 Confirmar la validación
+Después de subirlo, refresco la lista de certificados 🐧
+
+Si aún veo la X, me aseguro de que la CA esté marcada como trusted en:
+
+System → Trust → Authorities
+Una vez hecho esto, la GUI reconocerá mi certificado como válido 🐢.
+-->
+
+
 - Habilitar IPsec/IKEv2
 ` 
 VPN → IPsec → connections → Enable IPsec

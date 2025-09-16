@@ -9,7 +9,7 @@ Descargar la iso e instalar el firewall [OPNsense](https://opnsense.org/download
 Esto te da acceso al instalador.
 Recomendable elegir la opción `ZFS` como sistema de  archivos ya que es mas avanzado.
 Recomendable cambiar la contraseña.
-
+---
 ### 2️⃣. Asignar interfaces y IPs
 Se introduce las interfaces de red en la opción 1)assign interfaces y se añade las interfaces.
 
@@ -26,7 +26,7 @@ Le assignamos las IPs a las interfaces en la opción **2)Set interface IP addres
 
 <img width="1755" height="481" alt="image" src="https://github.com/user-attachments/assets/8e3abf26-e2c9-4d13-894c-067ebdc08f11" />
 
-
+---
 
 ### 3️⃣. Configuración inicial via GUI
 En el navegador → https://10.10.0.1
@@ -36,7 +36,7 @@ Se entra en "wizard" y se empieza a configurar:
      - DNS: `8.8.8.8 / 1.1.1.1` (opcional interno).
      - Activar SSH para gestión remota segura.
      - Cambiar contraseña admin por una fuerte.
-
+---
 ### 4️⃣. Reglas de firewall mínimas
 
 Se añade las siguientes reglas: 
@@ -224,9 +224,9 @@ VPN → IPsec → Log File
 Firewall → Log File
 -->
 
+5. DMZ </br>
 
 ---
-5. DMZ </br>
 
 ### 5️⃣. Integración con Router Core (RT-CORE-01)
 

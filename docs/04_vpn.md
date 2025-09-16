@@ -160,7 +160,8 @@ eap_identity -- permite usar usuario/contraseña para autenticar los clientes.
 -->
 💡 Siempre reviso que los CN y SAN de mi certificado coincidan con el hostname real del VPN-GW.
 
-Ⓑ. Arrancar StrongSwan
+Ⓑ. Arrancar StrongSwan </br>
+
 Para iniciar el daemon IPsec (charon) utilizo:
 ```bash
 sudo ipsec start

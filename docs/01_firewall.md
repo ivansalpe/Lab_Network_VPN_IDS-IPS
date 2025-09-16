@@ -64,12 +64,12 @@ Se añade las siguientes reglas:
  //La LAN (10.10.0.0/24) puede salir a Internet usando la IP de WAN del firewall (192.168.1.2). Esto evita conflictos de rutas y permite conectividad hacia afuera.
 
   4. VPN </br>
-  ⓐ. Importar la CA (ca-cert.pem) → `Ruta: System → Trust → Authorities → Add`
+ⓐ. Importar la CA (ca-cert.pem) → `Ruta: System → Trust → Authorities → Add`
 <div align="center">
      <img width="648" height="237" alt="image" src="https://github.com/user-attachments/assets/15b6e07d-b6ec-4417-bbf7-42e3ef1a279a">
 </div>
 
-   ⓑ. Importar el certificado del servidor firewall (vpn-gw.cert.pem + vpn-gw.key.pem) → `Ruta: System → Trust → Certificates → Add/Import`
+ⓑ. Importar el certificado del servidor firewall (vpn-gw.cert.pem + vpn-gw.key.pem) → `Ruta: System → Trust → Certificates → Add/Import`
 <div align="center">
      <img width="648" height="237" alt="image" src="https://github.com/user-attachments/assets/3c67e92a-0ec3-41b3-9640-6024289832ab" />
 </div>
@@ -162,10 +162,68 @@ Vamos a crear un alias ya que opnsense no deja introducir rangos de ip con la "-
   | **Lifetime** | ~ 3600 segundos |
 
 ⓔ. Reglas de Firewall y NAT
+Se debe añadir una serie de reglas, ya que si no se configuran las reglas correctamente, los clientes VPN no podrán comunicarse ni con la LAN ni con Internet.
 
 - **Firewall → Rules → WAN**: permitir UDP/500, UDP/4500 y protocolo ESP hacia IP `em2`.  
 - **Firewall → Rules → IPsec / Interface IPsec**: permitir tráfico entrante desde rango `10.10.2.100-200` hacia LAN `10.10.1.0/24`.  
 - **Outbound NAT**: si los clientes deben acceder a Internet a través de VPN, configura NAT (masquerade) con Source = `10.10.2.100-200`.
+  
+- 🔹 Se añade una nueva regla en  `Firewall → Rules → WAN` con los siguientes campos:
+
+| Campo | Valor |
+|-------|-------|
+| Action | Pass |
+| Interface | WAN |
+| Protocol | UDP |
+| Source | any |
+| Source Port Range | any |
+| Destination | WAN Address ('10.10.2.1/32' # IP del FW em2) |
+| Destination Port Range | 500 - 4500 (incluye IKE y NAT-T) |
+| Description | `Allow IPsec VPN` |
+
+> 💡 Esto permite que los clientes VPN remotos puedan iniciar la conexión IKEv2.
+
+- 🔹 Se añade otra nueva regla pero esta vez en  `Firewall → Rules → IPsec` con los siguientes campos:
+
+
+| Campo | Valor |
+|-------|-------|
+| Action | Pass |
+| Interface | IPsec |
+| Protocol | any |
+| Source | 10.10.2.100 - 10.10.2.200 (pool de clientes VPN) |
+| Destination | 10.10.1.0/24 (LAN interna) |
+| Description | `Allow VPN clients to LAN` |
+
+
+> 💡 Esto permite que los clientes VPN accedan a la red interna del laboratorio.
+
+- 🔹 Se Cambia el **mode** a `Hybrid Outbound NAT rule generation` o `Manual Outbound NAT` . Se añade una nueva regla en  `Firewall → NAT → Outbound` con los siguientes campos:
+
+| Campo | Valor |
+|-------|-------|
+| Interface | WAN |
+| Source | 10.10.2.100 - 10.10.2.200 |
+| Source Port | any |
+| Destination | any |
+| Translation / target | Interface Address |
+| Description | `Masquerade VPN clients to Internet` |
+
+> 💡 Esto permite que los clientes VPN puedan salir a Internet usando la IP pública del firewall.
+
+<!-- 
+🔹 Verificación rápida
+
+- Conéctate con un cliente VPN y prueba:
+- `ping 10.10.1.10` → SRV-WEB  
+- `ping 10.10.1.11` → SRV-DB  
+- `ping 8.8.8.8` → acceso a Internet (si NAT activo)  
+
+- Revisa logs en:
+VPN → IPsec → Log File
+Firewall → Log File
+-->
+
 
 ---
 5. DMZ </br>

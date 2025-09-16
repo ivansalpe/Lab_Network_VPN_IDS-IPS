@@ -123,7 +123,7 @@ Para automatizar el processo [Agenerate-cert](config/generate-vpn-cert.sh)
 
 En este paso voy a configurar la VPN Gateway (`VPN-GW 10.10.2.10`) usando **StrongSwan (IKEv2)** y conectarla con el Firewall `FW-EDGE-01`. Esto me permitirá que clientes remotos se conecten de forma segura a la LAN interna.
 
-#### Ⓐ Configuración de StrongSwan en VPN-GW
+Ⓐ. Configuración de StrongSwan en VPN-GW
 
 Modifico el archivo **/etc/ipsec.conf** con la siguiente configuración:
 
@@ -160,4 +160,32 @@ eap_identity -- permite usar usuario/contraseña para autenticar los clientes.
 -->
 💡 Siempre reviso que los CN y SAN de mi certificado coincidan con el hostname real del VPN-GW.
 
+Ⓑ. Arrancar StrongSwan
+```bash
+sudo systemctl enable strongswan
+sudo systemctl restart strongswan
+sudo ipsec statusall
+```
+Con esto, StrongSwan arranca automáticamente y puedo ver el estado de las conexiones.
+<!-- 
+Pruebas de conexión VPN
 
+Desde un cliente remoto:
+
+Importo la CA ca-cert.pem
+
+Creo una conexión IKEv2 hacia vpn.ivansalpe.lab
+
+Usuario: usuario
+
+Password: claveSuperSecreta123
+
+Pruebo conectividad:
+
+ping 10.10.1.10   # SRV-WEB
+ping 10.10.1.11   # SRV-DB
+ping 10.10.1.12   # SRV-APP
+ping 8.8.8.8      # Salida a Internet
+
+Si responde todo, significa que la VPN está funcionando correctamente y los clientes tienen acceso seguro a la LAN interna y opcionalmente a Internet.
+-->

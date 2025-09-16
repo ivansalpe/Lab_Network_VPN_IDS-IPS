@@ -113,39 +113,62 @@ Si aún veo la X, me aseguro de que la CA esté marcada como trusted en:
 System → Trust → Authorities
 Una vez hecho esto, la GUI reconocerá mi certificado como válido 🐢.
 -->
+ⓒ. 🔐 Fase 1: Establecimiento de la conexión segura(IPsec/IKEv2)
+Accedo a la interfaz web de OPNsense y navego a: `VPN → IPsec → connections → + Add Phase 1` 
+ 
+-- General settings (fase 1 básica)
+ 
+| Campo             | Valor / Configuración                                                                 |
+|-------------------|---------------------------------------------------------------------------------------|
+| **Name / Description** | `VPN-Clients‐IKEv2`                                                              |
+| **Version**       | `IKEv2`                                                                               |
+| **Interface**     | `em2` (interfaz donde la IP = `10.10.2.1`)                                            |
+| **Remote addresses** | `any` (aceptar clientes remotos)                                                   |
+| **Local addresses**  | vacío ó `10.10.2.1` (IP del firewall en esa interfaz, si OPNsense lo exige)        |
 
+-- Autenticación (fase 1)
 
-- Habilitar IPsec/IKEv2
-` 
-VPN → IPsec → connections → Enable IPsec
-` 
-<!-- Activa el servicio IPSec en el firewall. -->
+- **Local Authentication**: Certificates→ selecciona el certificado servidor `VPN-GW`  
+- **Remote Authentication**: Certificate Authorities → selecciona `VPN-CA`
 
-- Crear Fase 1 (IKEv2)
+ⓓ. 🔐 Fase 2: Configuración del túnel IPsec
 
-  
+Vamos a crear un alias ya que opnsense no deja introducir rangos de ip con la "-", para eso se requiere crear un alias en: `menú: Firewall → Aliases`.
 
-Interfaz em2 → IP 10.10.2.1
+| Campo       | Valor / Configuración                                                                 |
+|-------------|---------------------------------------------------------------------------------------|
+| **Name**    | `VPN_RANGE_100_200`                                                                  |
+| **Type**    | `Network(s)`                                                                          |
+| **Content** | 10.10.2.100/30<br>10.10.2.104/29<br>10.10.2.112/28<br>10.10.2.128/26<br>10.10.2.192/29 |
 
-Habilito IPsec/IKEv2
+- Añade un *child* (o sección “Children”) dentro de la Connection de la fase 1 para definir la fase 2.
 
-Creo fase 1 (IKEv2):
+<!-- 
+10.10.2.200/32 
+— Virtual Tunnel Interface (si lo necesitas)
 
-Remote Gateway: any (clientes)
+- Solo si se usa el modo **route-based / VTI** → crea una interfaz virtual en **VPN → IPsec → Virtual Tunnel Interfaces**  
+- Asigna un **reqid** único, y direcciones para el túnel si se requiere tráfico Enrutado.  
+- En este caso, si solo es clientes remotos, no se necesita configurar VTI, salvo que requiera que el túnel aparezca como interfaz local para rutas específicas.--> 
+- A los campos del child:
 
-Authentication: RSA (usar CA ca-cert.pem)
+  | Campo | Valor |
+  |---|---|
+  | **Mode** | Tunnel IPv4 |
+  | **Local Network / Local Traffic Selector** | `10.10.1.0/24` |
+  | **Remote Network / Remote Traffic Selector** | `VPN_RANGE_100_200` #este es el nombre del alias que se debe crear anteriormente |
+  | **Encryption / ESP proposals** | AES256 + SHA256 (o AES-GCM si lo prefieres) |
+  | **PFS / Key Exchange Group** | 14 |
+  | **Lifetime** | ~ 3600 segundos |
 
-Creo fase 2 (IPsec):
+ⓔ. Reglas de Firewall y NAT
 
-Local subnet: 10.10.1.0/24
+- **Firewall → Rules → WAN**: permitir UDP/500, UDP/4500 y protocolo ESP hacia IP `em2`.  
+- **Firewall → Rules → IPsec / Interface IPsec**: permitir tráfico entrante desde rango `10.10.2.100-200` hacia LAN `10.10.1.0/24`.  
+- **Outbound NAT**: si los clientes deben acceder a Internet a través de VPN, configura NAT (masquerade) con Source = `10.10.2.100-200`.
 
-Remote subnet: 10.10.2.100-200
-
-NAT: si quiero que los clientes accedan a Internet a través de la VPN, configuro masquerade.
-
-Tip: Activo logs de IPsec para depurar si hay problemas de conexión.
-
->// Permite tráfico seguro desde LAN hacia Internet, protege segmentos críticos.
+---
+5. DMZ </br>
 
 ### 5️⃣. Integración con Router Core (RT-CORE-01)
 

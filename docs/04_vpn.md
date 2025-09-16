@@ -161,12 +161,18 @@ eap_identity -- permite usar usuario/contraseña para autenticar los clientes.
 💡 Siempre reviso que los CN y SAN de mi certificado coincidan con el hostname real del VPN-GW.
 
 Ⓑ. Arrancar StrongSwan
+Para iniciar el daemon IPsec (charon) utilizo:
 ```bash
-sudo systemctl enable strongswan
-sudo systemctl restart strongswan
+sudo ipsec start
+```
+Esto lanza StrongSwan y carga la configuración de /etc/ipsec.conf y /etc/ipsec.secrets.
+
+Después puedo verificar el estado con:
+```bash
 sudo ipsec statusall
 ```
-Con esto, StrongSwan arranca automáticamente y puedo ver el estado de las conexiones.
+
+Tip: statusall muestra todas las conexiones definidas, SA activas y rangos de IP asignados a clientes VPN.
 <!-- 
 Pruebas de conexión VPN
 
@@ -188,4 +194,62 @@ ping 10.10.1.12   # SRV-APP
 ping 8.8.8.8      # Salida a Internet
 
 Si responde todo, significa que la VPN está funcionando correctamente y los clientes tienen acceso seguro a la LAN interna y opcionalmente a Internet.
+-->
+---
+<!-- 
+— Reiniciar StrongSwan
+
+Cada vez que modifico la configuración:
+
+sudo ipsec stop
+sudo ipsec start
+
+
+Esto asegura que los cambios en ipsec.conf o en los certificados se apliquen correctamente.
+
+— Arranque automático con systemd (opcional, recomendado)
+
+Si quiero que StrongSwan se inicie al arrancar Ubuntu, puedo crear un unit file personalizado:
+
+Crear archivo de unidad:
+
+sudo nano /etc/systemd/system/strongswan.service
+
+Pegar contenido:
+
+[Unit]
+Description=StrongSwan IPsec VPN daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/ipsec start
+ExecStop=/usr/sbin/ipsec stop
+ExecReload=/usr/sbin/ipsec reload
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+
+Recargar systemd y habilitar servicio:
+
+sudo systemctl daemon-reload
+sudo systemctl enable strongswan
+sudo systemctl start strongswan
+sudo systemctl status strongswan
+
+
+Ahora strongswan arranca automáticamente al inicio del sistema.
+
+status muestra que el daemon está activo y cargando las configuraciones.
+
+— Ver conexiones y depuración
+sudo ipsec statusall
+sudo journalctl -u strongswan -f
+
+
+statusall → estado de túneles, SA IKE/IPsec, IP asignadas a clientes
+
+journalctl -f → logs en tiempo real para troubleshooting
 -->

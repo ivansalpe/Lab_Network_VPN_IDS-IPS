@@ -249,6 +249,7 @@ Si quieres ver logs en vivo:
 ---
 
 🂮. Probar reglas en laboratorio (tests)  </br>
+
 a) Test SSH (regla drop)
 
 Desde una VM atacante en la LAN se intenta conectar por SSH al servidor de pruebas (p. ej. srv-web o al mismo FW):

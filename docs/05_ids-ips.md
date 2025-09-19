@@ -271,3 +271,38 @@ b) Test ICMP (regla alert)
 ping -c 3 10.10.1.10
 ```
 > Se Debe ver en eve.json la alerta con sid:1000002.
+### .Configuración del bridge inline en IDS (Ubuntu 25.0)
+
+En el IDS, para que todo el tráfico pase de la LAN hacia el FW y sea inspeccionado:
+
+// Crear un bridge llamado br-inline
+``` bash
+sudo ip link add name br-inline type bridge
+```
+// Agregar las interfaces del IDS al bridge
+``` bash
+sudo ip link set ens33 master br-inline    # tráfico desde Core / LAN_IN
+sudo ip link set ens34 master br-inline    # tráfico hacia FW / FW_OUT
+```
+
+// Activar el bridge y las interfaces
+``` bash
+sudo ip link set dev br-inline up
+sudo ip link set dev ens33 up
+sudo ip link set dev ens34 up
+```
+<span style="color: #00AA00;">✦</span> Interfaz de gestión o bridge (br-inline)
+
+Para poder administrar la VM del IDS (SSH, pruebas, configuración), se debe  crear un bridge virtual que combine las interfaces físicas:
+``` bash
+sudo ip addr add 10.10.0.50/24 dev br-inline
+sudo ip link set br-inline up
+```
+Ahora se puede usar 10.10.0.50 para conectarte al IDS y configurarlo, sin afectar el tráfico que pasa por ens33/ens34.
+<!--
+💡 Tip profesional:
+
+Las IPs solo deben existir para administración o pruebas, nunca en la interfaz que pasa tráfico en modo inline.
+
+Esto es equivalente a separar el plano de datos (tráfico inspeccionado) del plano de gestión (administración del IDS).
+-->

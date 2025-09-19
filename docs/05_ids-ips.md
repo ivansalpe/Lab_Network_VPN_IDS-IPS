@@ -271,7 +271,8 @@ b) Test ICMP (regla alert)
 ping -c 3 10.10.1.10
 ```
 > Se Debe ver en eve.json la alerta con sid:1000002.
-### .Configuración del bridge inline en IDS (Ubuntu 25.0)
+
+### 3️⃣. Configuración del bridge inline en IDS (Ubuntu 25.0)
 
 En el IDS, para que todo el tráfico pase de la LAN hacia el FW y sea inspeccionado:
 
@@ -301,8 +302,14 @@ sudo ip link set br-inline up
 Ahora se puede usar 10.10.0.50 para conectarte al IDS y configurarlo, sin afectar el tráfico que pasa por ens33/ens34.
 <!--
 💡 Tip profesional:
-
+- ip link add name br-inline type bridge → crea un bridge virtual en Linux.
+- ip link set <interfaz> master br-inline → conecta la interfaz física al bridge.
+- ip link set dev <interfaz> up → activa la interfaz.
+- Todo el tráfico que entre por ens33 pasará por Suricata (AF_PACKET inline) y saldrá por ens34 hacia FW.
+Tips
+- Las interfaces no deben tener IP asignada, el bridge maneja el tráfico transparente.
+- Si tu VM solo tiene una NIC (ens33), en VMware puedes añadir una segunda NIC (ens34) para simular salida hacia FW.
+- Verifica que Suricata esté configurado para AF_PACKET sobre estas interfaces.
 Las IPs solo deben existir para administración o pruebas, nunca en la interfaz que pasa tráfico en modo inline.
-
 Esto es equivalente a separar el plano de datos (tráfico inspeccionado) del plano de gestión (administración del IDS).
 -->

@@ -288,17 +288,17 @@ sudo ip link set ens34 master br-inline    # tráfico hacia FW / FW_OUT
 
 // Activar el bridge y las interfaces
 ``` bash
-sudo ip link set dev br-inline up
-sudo ip link set dev ens33 up
-sudo ip link set dev ens34 up
+sudo ip link set br-inline up
+sudo ip link set ens33 up
+sudo ip link set ens34 up
 ```
 <span style="color: #00AA00;">✦</span> Interfaz de gestión o bridge (br-inline)
 
-Para poder administrar la VM del IDS (SSH, pruebas, configuración), se debe  crear un bridge virtual que combine las interfaces físicas:
+Asignar IP al bridge(Esto es la IP de gestión del IDS.):
 ``` bash
 sudo ip addr add 10.10.0.50/24 dev br-inline
-sudo ip link set br-inline up
 ```
+Las interfaces físicas (ens33 y ens34) no tienen IP, sólo forman parte del bridge.
 Ahora se puede usar 10.10.0.50 para conectarte al IDS y configurarlo, sin afectar el tráfico que pasa por ens33/ens34.
 <!--
 💡 Tip profesional:
@@ -313,3 +313,5 @@ Tips
 Las IPs solo deben existir para administración o pruebas, nunca en la interfaz que pasa tráfico en modo inline.
 Esto es equivalente a separar el plano de datos (tráfico inspeccionado) del plano de gestión (administración del IDS).
 -->
+
+

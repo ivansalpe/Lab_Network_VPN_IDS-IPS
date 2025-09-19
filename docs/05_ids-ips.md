@@ -76,9 +76,13 @@ sudo apt install -y ethtool
 ethtool -k ens33
 -->
 🦴 Deshabilitar offloading de NIC para asegurar que Suricata inspeccione todo el tráfico:
-
+``` bash
 sudo ethtool -K ens33 gro off gso off tso off
-
+```
+🦴 Habilitamos el modo promiscuo:
+``` bash
+ip link set br-inline promisc on
+```
 ***
 
 ### 2️⃣. Configurar Suricata en modo Inline

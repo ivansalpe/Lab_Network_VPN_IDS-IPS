@@ -248,7 +248,7 @@ Si quieres ver logs en vivo:
 -->
 ---
 
-🂮. Probar reglas en laboratorio (tests)
+🂮. Probar reglas en laboratorio (tests)  </br>
 a) Test SSH (regla drop)
 
 Desde una VM atacante en la LAN se intenta conectar por SSH al servidor de pruebas (p. ej. srv-web o al mismo FW):
@@ -261,7 +261,7 @@ nc -vz 10.10.1.10 22
 ssh -o ConnectTimeout=5 usuario@10.10.1.10
 -->
 
->Si la regla drop se disparó, la conexión debe fallar y en eve.json se verá el sid:1000001 con action drop.
+> Si la regla drop se disparó, la conexión debe fallar y en eve.json se verá el sid:1000001 con action drop.
 
 > Observamos tcpdump en ens33 para verificar que los paquetes son descartados.
 

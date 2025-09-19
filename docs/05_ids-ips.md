@@ -78,7 +78,9 @@ ethtool -k ens33
 🦴 Deshabilitar offloading de NIC para asegurar que Suricata inspeccione todo el tráfico:
 
 sudo ethtool -K ens33 gro off gso off tso off
+
 ***
+
 ### 2️⃣. Configurar Suricata en modo Inline
 
 <!--
@@ -168,6 +170,7 @@ sudo tcpdump -i ens33 -n para comprobar si el tráfico deja de salir
 Revisa eve.json para ver el sid y la acción (drop/alert)
 -->
 ***
+
 3️⃣. Reglas de Suricata(descarga, activación y creación de reglas DROP)
 
 🂡. Actualizar/instalar ```suricata-update```:
@@ -192,7 +195,9 @@ sudo suricata-update
 ```
 
 🎯 se generará un fichero de reglas (ej. /var/lib/suricata/rules/suricata.rules) y Suricata leerá esas reglas vía la configuración en suricata.yaml.
+
 ---
+
 🂱. Revisar / probar reglas descargadas
 
 Lista las reglas principales:
@@ -201,6 +206,7 @@ sudo ls -lh /var/lib/suricata/rules/
 sudo head -n 40 /var/lib/suricata/rules/suricata.rules
 ```
 ---
+
 🃁. Crear un fichero de reglas local para pruebas (local.rules)
 
 Creamos ```sudo nano /etc/suricata/rules/local.rules```:
@@ -231,9 +237,6 @@ reiniciar Suricata (o parar la ejecución actual, detener y volver a iniciar):
 sudo systemctl restart suricata
 ```
 
-# Si lo ejecutaste manualmente: detener proceso y volver a lanzar
-sudo pkill suricata
-sudo suricata -D -c /etc/suricata/suricata.yaml -i ens33 --af-packet
 <!--
 # Si lo ejecutaste manualmente: detener proceso y volver a lanzar
   sudo pkill suricata
@@ -243,6 +246,7 @@ Si quieres ver logs en vivo:
   sudo journalctl -u suricata -f
 -->
 ---
+
 🂮. Probar reglas en laboratorio (tests)
 a) Test SSH (regla drop)
 

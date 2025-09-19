@@ -181,15 +181,15 @@ sudo apt install -y suricata-update
 
 Descargar y aplicar reglas (flujo seguro):
 
-# Actualiza fuentes internas
+Actualiza fuentes internas
 ``` bash
 sudo suricata-update update-sources
 ```
-# Habilitar Emerging Threats Open (ET Open)
+Habilitar Emerging Threats Open (ET Open)
 ``` bash
 sudo suricata-update enable-source et/open
 ```
-# Descargar y generar las reglas finales usadas por Suricata
+Descargar y generar las reglas finales usadas por Suricata
 ``` bash
 sudo suricata-update
 ```
@@ -197,6 +197,7 @@ sudo suricata-update
 🎯 se generará un fichero de reglas (ej. /var/lib/suricata/rules/suricata.rules) y Suricata leerá esas reglas vía la configuración en suricata.yaml.
 
 ---
+#### Pruebas de reglas internas
 
 🂱. Revisar / probar reglas descargadas
 
@@ -250,20 +251,22 @@ Si quieres ver logs en vivo:
 🂮. Probar reglas en laboratorio (tests)
 a) Test SSH (regla drop)
 
-Desde una VM atacante en la LAN intenta conectar por SSH al servidor de pruebas (p. ej. srv-web o al mismo FW):
+Desde una VM atacante en la LAN se intenta conectar por SSH al servidor de pruebas (p. ej. srv-web o al mismo FW):
 
-# desde atacante
+// desde atacante
+``` bash
 nc -vz 10.10.1.10 22
-# o
+```
+<!-- o
 ssh -o ConnectTimeout=5 usuario@10.10.1.10
+-->
 
+>Si la regla drop se disparó, la conexión debe fallar y en eve.json se verá el sid:1000001 con action drop.
 
-Si la regla drop se disparó, la conexión debe fallar y en eve.json verás el sid:1000001 con action drop.
-
-Observa tcpdump en ens33 para verificar que los paquetes son descartados.
+> Observamos tcpdump en ens33 para verificar que los paquetes son descartados.
 
 b) Test ICMP (regla alert)
+``` bash
 ping -c 3 10.10.1.10
-
-
-Debes ver en eve.json la alerta con sid:1000002.
+```
+> Se Debe ver en eve.json la alerta con sid:1000002.

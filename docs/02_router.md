@@ -114,20 +114,72 @@ VyOS tiene IP forwarding activado por defecto, pero para asegurarse:
 ``` bash
 set system ip-forwarding
 ```
-## Verificaciones
+##### Verificaciones:
+``` bash
 show interfaces
-# Comentario: Comprueba que eth1.1, eth0.2 y eth3.3 existen y tienen las IPs correctas.
-
+```
+// Comprueba que eth1.1, eth0.2 y eth3.3 existen y tienen las IPs correctas.
+``` bash
 ping 10.10.1.10
-# Comentario: Comprueba conectividad con SRV-WEB (VLAN1).
-
+```
+// Comentario: Comprueba conectividad con SRV-WEB (VLAN1).
+``` bash
 ping 10.10.2.10
-# Comentario: Comprueba conectividad con VPN-GW (VLAN2).
-
+```
+// Comprueba conectividad con VPN-GW (VLAN2).
+``` bash
 ping 10.10.3.10
-# Comentario: Comprueba conectividad con DMZ-WEB (VLAN3).
+```
+// Comprueba conectividad con DMZ-WEB (VLAN3).
 
 ### 4️⃣. Integración con FW-EDGE-01 e IDS
+<!--
+Diagrama de flujo de integración
+
+| Nodo        | Interfaz Core      | Interfaz Destino       | Tipo de Conexión       |
+|------------|------------------|----------------------|----------------------|
+| Core Router | VLAN1             | SW-CORE-02           | LAN interna          |
+| Core Router | VLAN0 o trunk     | IDS (eth0)           | Monitor/inline       |
+| Core Router | VLAN2             | FW-EDGE-01 (em1 LAN) | LAN / IPS inline     |
+
+- Todo el tráfico LAN → Core → FW → IDS (inline)
+- Se usan VLANs para separar tráfico de usuarios, servidores y DMZ.
+- IDS en modo inline conectado al Core permite inspeccionar y bloquear tráfico antes de llegar al FW o a los servidores.
+-->
+🍀 Configurar VLANs en el Core Router
+
+VLAN 1 - LAN interna
+``` bash
+# VLAN1 - LAN interna
+sudo ip link add link eth0 name eth0.1 type vlan id 1
+sudo ip addr add 10.10.1.1/24 dev eth0.1
+sudo ip link set dev eth0.1 up
+```
+VLAN 2 - IPS/IDS trunk
+``` bash
+sudo ip link add link eth0 name eth0.2 type vlan id 2
+sudo ip addr add 10.10.0.2/24 dev eth0.2
+sudo ip link set dev eth0.2 up
+```
+<!--
+Explicación:
+- link eth0 → subinterface sobre la interfaz física ens33.
+- name eth0.X → nombre de la subinterface.
+- type vlan id X → asigna ID de VLAN.
+- ip addr add → define la IP del Core Router en esa VLAN.
+- ip link set up → activa la interfaz.
+-->>>
+🍀 Configurar rutas hacia FW-EDGE-01 e IDS
+
+Red LAN interna a FW (tráfico hacia firewall)
+``` bash
+sudo ip route add 10.10.0.0/24 via 10.10.0.1    # FW-EDGE-01 LAN
+```
+Red IDS inline
+```
+sudo ip route add 10.10.0.50/32 via 10.10.0.50  # IDS/IPS
+```
+
 ### 5️⃣. Conectar SWC y servidores
 <!-- =========================================== 
 7. Verificaciones básicas

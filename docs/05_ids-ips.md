@@ -144,7 +144,9 @@ sudo suricata -T -c /etc/suricata/suricata.yaml
 ```
 <img width="1555" height="94" alt="image" src="https://github.com/user-attachments/assets/091052a9-6ecd-4c94-bf00-9c32111a595d" />
 Arrancar Suricata en modo af-packet (inline)
+
 Primero en **modo monitor** para validar detecciones (recomiendo empezar aquí):
+
 ``` bash
 sudo suricata -c /etc/suricata/suricata.yaml -i ens33 --af-packet --pidfile /var/run/suricata.pid
 ```

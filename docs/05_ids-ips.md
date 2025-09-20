@@ -108,7 +108,7 @@ sudo nano /etc/suricata/suricata.yaml
 Cambios principales:
 ``` yaml
 af-packet:
-  - interface: ens33
+    interface: br-inline
     cluster-id: 99
     cluster-type: cluster_flow
     defrag: yes

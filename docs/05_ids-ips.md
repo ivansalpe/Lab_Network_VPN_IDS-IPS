@@ -37,20 +37,37 @@ Ponemos lo siguiente:
 network:
   version: 2
   renderer: networkd
+
   ethernets:
     ens33:
+      dhcp4: no
+      addresses:
+        - 192.168.100.50/24      # Red de gestión separada
+      gateway4: 192.168.100.1    # Gateway de la red de gestión
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+
+    ens34:
+      dhcp4: no
+    ens35:
+      dhcp4: no
+
+  bridges:
+    br-inline:
+      interfaces: [ens34, ens35]
       dhcp4: no
       addresses:
         - 10.10.0.50/24
       gateway4: 10.10.0.1
       nameservers:
-        addresses: [10.10.0.1,8.8.8.8]
-    ens34:
-      dhcp4: yes
+        addresses: [10.10.0.1, 8.8.8.8]
+
 ```
 aplicamos los cambios.
 ``` bash
 sudo netplan apply
+ip a show br-inline
+brctl show
 ```
 <!--
 Verificar conectividad:
@@ -61,11 +78,17 @@ ping -c 3 10.10.0.1
 # Ping a Internet (por eth1)
 ping -c 3 8.8.8.8
 -->
+<!--
+- ens33: red de administración aislada → así no dependes del inline para entrar al IDS.
+- ens34 + ens35: sin IP, solo sirven para pasar tráfico en modo bridge.
+- br-inline: aquí sí tienes la IP 10.10.0.50/24, puerta de enlace el firewall (10.10.0.1).
 
-🦴 Instalamos Suricata(motor IDS/IPS)
+Con esto, el IDS forma parte de la red 10.10.0.0/24 y al mismo tiempo intercepta el tráfico que cruza entre el router core y el firewall.
+-->
+🦴 Instalamos Suricata(motor IDS/IPS) y ls utilidades.
 ``` bash
 sudo apt update
-sudo apt install -y suricata ethtool
+sudo apt install -y suricata ethtool bridge-utils
 ```
 <!--
 suricata → motor IDS/IPS

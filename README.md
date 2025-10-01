@@ -124,7 +124,7 @@ graph TD
 
 2️⃣ IDS/IPS Inline (Suricata) 
 
-[Parte Ids-IPs](docs/05_ids-ips.md)
+[Parte IDSs-IPS](docs/05_ids-ips.md)
 
 3️⃣ Core Router/Switch y servidores internos(VLAN) <br>
 

@@ -117,16 +117,27 @@ graph TD
 ---
 
 <i></b>📝 Manual Paso a Paso</i></b>
-1️⃣ FW-EDGE-01 (OPNsense) <br>
+
+1️⃣ FW-EDGE-01 (OPNsense)
+
 [Parte Firewall](docs/01_firewall.md)
-2️⃣ IDS/IPS Inline (Suricata) <br>
+
+2️⃣ IDS/IPS Inline (Suricata) 
+
 [Parte Ids-IPs](docs/05_ids-ips.md)
+
 3️⃣ Core Router/Switch y servidores internos(VLAN) <br>
+
 [Parte Router](docs/02_router.md)
+
 [Parte Switch](docs/03_switch.md)
+
 4️⃣ VPN-GW - Clientes VPN<br>
+
 [Parte VPN](docs/04_vpn.md)
+
 5️⃣ DMZ  <br>
+
 [Parte DMZ](docs/06_dmz.md)
 
 ---

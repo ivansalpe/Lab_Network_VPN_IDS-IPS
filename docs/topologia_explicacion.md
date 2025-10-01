@@ -8,7 +8,7 @@
 ## 2. FW-EDGE-01 (Firewall perimetral)
 - Conecta Internet con la red interna.
 - **Interfaces:**
-  - `eth0` → Internet (`192.0.2.1/24`)
+  - `eth0` → Internet (`192.168.2.1/24`)
   - `eth1` → Red interna Core (`10.10.0.1/24`)
 - **Función:**
   - Controla qué tráfico externo entra y sale.

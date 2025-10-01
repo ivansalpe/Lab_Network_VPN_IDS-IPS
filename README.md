@@ -124,13 +124,13 @@ graph TD
 
 2️⃣ IDS/IPS Inline (Suricata) 
 
-[Parte IDSs-IPS](docs/05_ids-ips.md)
+[Parte IDSs-IPS](docs/02_ids-ips.md)
 
 3️⃣ Core Router/Switch y servidores internos(VLAN) <br>
 
-[Parte Router](docs/02_router.md)
+[Parte Router](docs/03a_router.md)
 
-[Parte Switch](docs/03_switch.md)
+[Parte Switch](docs/03b_switch.md)
 
 4️⃣ VPN-GW - Clientes VPN<br>
 
@@ -138,7 +138,7 @@ graph TD
 
 5️⃣ DMZ  <br>
 
-[Parte DMZ](docs/06_dmz.md)
+[Parte DMZ](docs/05_dmz.md)
 
 ---
 

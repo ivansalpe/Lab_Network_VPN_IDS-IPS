@@ -1,0 +1,30 @@
+# SRV-DMZ-WEB
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [10.10.3.10/24]
+      gateway4: 10.10.3.1
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8]
+# SRV-DMZ-MAIL
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [10.10.3.11/24]
+      gateway4: 10.10.3.1
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8]
+# SRV-DMZ-DNS
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [10.10.3.12/24]
+      gateway4: 10.10.3.1
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8]

@@ -41,29 +41,29 @@ Se entra en "wizard" y se empieza a configurar:
 
 Se añade las siguientes reglas: 
     
-  1. LAN → Any (permit established)  → `Menú: Firewall → Rules  →  Lan`
+  <mark>1. LAN → Any (permit established)  → `Menú: Firewall → Rules  →  Lan`</mark>
      - **Action:** Pass
      - **Interface:** LAN
      - **Source:** LAN net
      - **Destination:** Any
      - **State type:** Keep state
      - **Description:** "Allow LAN to Internet (established)"
-  >//Esto permite que todos los hosts de la LAN inicien conexiones hacia cualquier destino (Internet, VPN, Core), mientras bloquea conexiones no solicitadas desde fuera.
+  > Esto permite que todos los hosts de la LAN inicien conexiones hacia cualquier destino (Internet, VPN, Core), mientras bloquea conexiones no solicitadas desde fuera.
   
-  2. WAN → Solo HTTPS/SSH desde IP segura  → `Menú: Firewall → Rules → Wan`
+  <mark>2. WAN → Solo HTTPS/SSH desde IP segura  → `Menú: Firewall → Rules → Wan`</mark><br>
      - **Action:** Pass
      - **Interface:** WAN
      - **Source:** IP de gestión segura (ej: mi IP pública/32 o cualquier-ip-interna/32) o VPN/red interna(10.10.2.0/24) 
      - **Destination:** WAN address(192.168.1.2)
      - **Destination port range:** HTTPS (443) o SSH (22)
      - **Description:** "Allow secure remote admin"
-  >//Esto Permite que solo direcciones IP autorizadas accedan al firewall desde Internet. Si no se necesita acceso remoto, **no agregar esta regla**.
+  > Esto Permite que solo direcciones IP autorizadas accedan al firewall desde Internet. Si no se necesita acceso remoto, **no agregar esta regla**.
 
-  3. NAT outbound: Automatic (masquerade para LAN → WAN) → Menú: `Menú: Firewall → NAT → Outbound`
+  <mark> 3. NAT outbound: Automatic (masquerade para LAN → WAN) → Menú: `Menú: Firewall → NAT → Outbound`</mark><br>
      - Seleccionar **Automatic Outbound NAT**.
- //La LAN (10.10.0.0/24) puede salir a Internet usando la IP de WAN del firewall (192.168.1.2). Esto evita conflictos de rutas y permite conectividad hacia afuera.
+  > La LAN (10.10.0.0/24) puede salir a Internet usando la IP de WAN del firewall (192.168.1.2). Esto evita conflictos de rutas y permite conectividad hacia afuera.
 
-  4. VPN </br>
+  <mark>4. VPN </mark></br>
 ⓐ. Importar la CA (ca-cert.pem) → `Ruta: System → Trust → Authorities → Add`
 <div align="center">
      <img width="648" height="237" alt="image" src="https://github.com/user-attachments/assets/15b6e07d-b6ec-4417-bbf7-42e3ef1a279a">
@@ -224,11 +224,35 @@ VPN → IPsec → Log File
 Firewall → Log File
 -->
 
-5. DMZ </br>
+  <mark>5. DMZ </mark></br>
 
----
+ⓐ **Asigno la interfaz DMZ**
+- Voy a **Interfaces → Assignments** y agrego `em3` como interfaz DMZ.
+- Configuro la IP: `10.10.3.1/24` y habilito la interfaz.
 
-### 5️⃣. Integración con Router Core (RT-CORE-01)
+ⓔ **Creo las reglas de firewall para DMZ**
+- Entro en **Firewall → Rules → DMZ**.
+- Permito tráfico **LAN → DMZ** solo a los puertos necesarios:
+  - WEB: 80/443 TCP
+  - MAIL: 25, 143, 587, 993 TCP
+  - DNS: 53 TCP/UDP
+- Bloqueo todo lo demás por defecto.
+- Permito tráfico **DMZ → Internet** si los servidores necesitan actualizarse, usando NAT (Masquerade).
+- Habilito **logging** para todas las reglas críticas.
+
+ⓒ **Configuro NAT si es necesario**
+- Voy a **Firewall → NAT → Outbound**.
+- Habilito masquerade para la DMZ si quiero que los servidores salgan a Internet con la IP del firewall.
+
+ⓓ **Activo inspección IDS/IPS**
+- Con Suricata en modo **inline**, verifico que la interfaz DMZ esté monitorizada para capturar y bloquear tráfico malicioso.
+
+<!-- **Pruebo conectividad**
+- Desde LAN: `ping 10.10.3.10`, `ping 10.10.3.11`, `ping 10.10.3.12`.
+- Desde VPN/Internet: compruebo HTTP, correo y DNS con `curl`, `telnet` o `dig`.
+-->
+> Con esto, mi DMZ queda segmentada, segura y lista para exponer solo los servicios necesarios mientras todo el tráfico pasa por inspección del firewall y del IDS/IPS.
+
 
 
 
